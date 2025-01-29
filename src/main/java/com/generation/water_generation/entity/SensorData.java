@@ -1,5 +1,8 @@
 package com.generation.water_generation.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,5 +20,9 @@ public class SensorData {
     private String temperature;
     private String humidity;
     private String waterLevel;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private String timestamp;
 
 }
