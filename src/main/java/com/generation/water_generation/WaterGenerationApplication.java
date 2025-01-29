@@ -1,0 +1,13 @@
+package com.generation.water_generation;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class WaterGenerationApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(WaterGenerationApplication.class, args);
+	}
+
+}
