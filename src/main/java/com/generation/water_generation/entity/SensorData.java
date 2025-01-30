@@ -17,9 +17,10 @@ public class SensorData {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private String temperature;
-    private String humidity;
-    private String waterLevel;
+    private Double temperature;
+    private Double humidity;
+    private Double waterLevel;
+    private Double waterExtracted;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

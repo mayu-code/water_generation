@@ -26,8 +26,13 @@ public class SensorDataServiceImpl implements SensorDataService {
 
     @Override
     public List<SensorData> getAllData() {
-        // TODO Auto-generated method stub
-        return this.repository.findAll();
+        return this.repository.findByOrderByTimestampDesc();
+    }
+
+    @Override
+    public Double getLastWaterLevel() {
+        SensorData lastEntry = repository.findTopByOrderByTimestampDesc();
+        return (lastEntry != null) ? lastEntry.getWaterLevel() : null;
     }
 
 }

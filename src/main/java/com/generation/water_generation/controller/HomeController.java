@@ -1,5 +1,7 @@
 package com.generation.water_generation.controller;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,7 @@ import com.generation.water_generation.DTO.response.SensorDataResponse;
 import com.generation.water_generation.entity.SensorData;
 import com.generation.water_generation.services.SensorDataService;
 import com.generation.water_generation.services.SensorDataServiceImpl;
+import com.generation.water_generation.services.WaterExtractionCalculator;
 
 @RestController
 @RequestMapping("/")
@@ -36,6 +39,35 @@ public class HomeController {
         sensorData.setTemperature(req.getTemperature());
         sensorData.setWaterLevel(req.getWaterLevel());
 
+        // Get previous water level from the latest entry
+        Double previousWaterLevel = serviceImpl.getLastWaterLevel();
+
+        // Calculate water extracted (previous level - current level)
+        if (previousWaterLevel != null) {
+            double extracted = previousWaterLevel - req.getWaterLevel();
+            sensorData.setWaterExtracted(extracted > 0 ? extracted : 0.0); // Only store positive values
+        } else {
+            sensorData.setWaterExtracted(0.0); // First entry is 0
+        }
+
+        // Get the values (already in percentage)
+        double temperature = req.getTemperature(); // Temperature in Celsius
+        double humidity = req.getHumidity(); // Humidity in percentage
+        double waterLevel = req.getWaterLevel(); // Water level in percentage
+
+        // Constant k for water generation estimation (adjust based on environment)
+        double k = 0.1;
+
+        // Calculate the water generated (waterExtracted) based on temperature,
+        // humidity, and water level
+        double waterGenerated = k * temperature * (1 - (humidity / 100)) * (waterLevel / 100);
+
+        // Round to 2 decimal places using BigDecimal
+        BigDecimal roundedWaterGenerated = new BigDecimal(waterGenerated).setScale(2, RoundingMode.HALF_UP);
+
+        // Store the rounded water generated (extracted) value
+        sensorData.setWaterExtracted(roundedWaterGenerated.doubleValue()); // Store in waterExtracted field
+
         SensorDataResponse res = new SensorDataResponse();
 
         try {
@@ -47,9 +79,8 @@ public class HomeController {
 
             return ResponseEntity.of(Optional.of(res));
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
-            res.setMessage("Data add faild !!");
+            res.setMessage("Data addition failed !!");
             res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             res.setStatusCode(500);
 

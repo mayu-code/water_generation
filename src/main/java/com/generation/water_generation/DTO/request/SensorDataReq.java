@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SensorDataReq {
-    private String temperature;
-    private String humidity;
-    private String waterLevel;
+    private Double temperature;
+    private Double humidity;
+    private Double waterLevel;
 }

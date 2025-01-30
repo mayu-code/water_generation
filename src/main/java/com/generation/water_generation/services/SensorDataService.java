@@ -11,4 +11,6 @@ public interface SensorDataService {
     List<SensorData> getRecentSensorData();
 
     List<SensorData> getAllData();
+
+    Double getLastWaterLevel();
 }
