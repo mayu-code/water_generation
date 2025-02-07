@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.generation.water_generation.DTO.request.SensorDataReq;
 import com.generation.water_generation.DTO.response.DataResponse;
+import com.generation.water_generation.DTO.response.MotorStatusResponse;
 import com.generation.water_generation.DTO.response.SensorDataResponse;
 import com.generation.water_generation.entity.SensorData;
+import com.generation.water_generation.services.MotorStatusServiceImpl;
 import com.generation.water_generation.services.SensorDataService;
 import com.generation.water_generation.services.SensorDataServiceImpl;
 import com.generation.water_generation.services.WaterExtractionCalculator;
@@ -30,6 +32,9 @@ public class HomeController {
 
     @Autowired
     private SensorDataServiceImpl serviceImpl;
+
+    @Autowired
+    private MotorStatusServiceImpl motorStatusServiceImpl;
 
     @PostMapping("addData")
     public ResponseEntity<?> addData(@RequestBody SensorDataReq req) {
@@ -113,6 +118,38 @@ public class HomeController {
         res.setStatus(HttpStatus.OK);
         res.setStatusCode(200);
         res.setData(allData);
+
+        return ResponseEntity.of(Optional.of(res));
+
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> getStatus() {
+
+        MotorStatusResponse res = new MotorStatusResponse();
+        String status = motorStatusServiceImpl.getStatus();
+
+        res.setMessage("Status Get Successfully");
+        res.setMotor(status);
+        res.setStatus(HttpStatus.OK);
+        res.setStatusCode(200);
+
+        return ResponseEntity.of(Optional.of(res));
+
+    }
+
+    @PostMapping("/toggle")
+    public ResponseEntity<?> toggleLight() {
+
+        MotorStatusResponse res = new MotorStatusResponse();
+
+        String newStatus = motorStatusServiceImpl.getStatus().equals("OFF") ? "ON" : "OFF";
+        motorStatusServiceImpl.setStatus(newStatus);
+
+        res.setMessage("Status Changed Successfully");
+        res.setMotor(newStatus);
+        res.setStatus(HttpStatus.OK);
+        res.setStatusCode(200);
 
         return ResponseEntity.of(Optional.of(res));
 
