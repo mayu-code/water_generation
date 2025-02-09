@@ -13,14 +13,13 @@ import java.util.Map;
 public class DeviceController {
 
     private static Instant lastPingTime = Instant.now(); // Track last ping
+    private static boolean isDeviceOnline = false; // Track device status
 
     @GetMapping("/status")
     public Map<String, String> getDeviceStatus() {
         Map<String, String> response = new HashMap<>();
 
-        long secondsSinceLastPing = Instant.now().getEpochSecond() - lastPingTime.getEpochSecond();
-
-        if (secondsSinceLastPing <= 2) { // If last ping was within 10 seconds, it's online
+        if (isDeviceOnline) {
             response.put("status", "online");
         } else {
             response.put("status", "offline");
@@ -32,11 +31,15 @@ public class DeviceController {
     @PostMapping("/ping")
     public void updatePing() {
         lastPingTime = Instant.now(); // Update last ping time
+        isDeviceOnline = true; // Mark device as online
     }
 
-    @Scheduled(fixedRate = 10000) // Reset status if no ping in 10 seconds
+    @Scheduled(fixedRate = 5000) // Check every 5 seconds
     public void checkDeviceHealth() {
-        if (Instant.now().getEpochSecond() - lastPingTime.getEpochSecond() > 10) {
+        long secondsSinceLastPing = Instant.now().getEpochSecond() - lastPingTime.getEpochSecond();
+
+        if (secondsSinceLastPing > 10) { // If no ping in the last 10 seconds, mark offline
+            isDeviceOnline = false;
             System.out.println("Device is offline!");
         }
     }
