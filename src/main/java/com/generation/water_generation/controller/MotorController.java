@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/motor")
+@CrossOrigin
 public class MotorController {
     private final AtomicInteger speed = new AtomicInteger(0);
     private boolean isRunning = false;
